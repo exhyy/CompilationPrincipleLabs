@@ -258,6 +258,8 @@ void full_scan(FILE *src, FILE *dest, int _stdout)
     while (1)
     {
         ch = fgetc(src);
+        if (ch == EOF)
+            break;
         if (ch != ' ' && ch != '\n')
         {
             retract(src);
