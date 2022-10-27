@@ -1,3 +1,5 @@
-for int while BCS32
+for int while BCS32 // hello123 BCS32
+
+322 + /* comment!!!    */ 223 <> p123a
 
 += >> >>> 213
