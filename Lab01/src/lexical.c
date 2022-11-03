@@ -63,7 +63,8 @@ void single_scan(FILE *src, FILE *dest, int _stdout)
             if (i >= MAX_TOKEN_LENGTH)
             {
                 report_error("标识符过长！");
-                exit(1);
+                // exit(1);
+                return;
             }
             ch = fgetc(src);
         }
@@ -89,7 +90,8 @@ void single_scan(FILE *src, FILE *dest, int _stdout)
             if (i > MAX_TOKEN_LENGTH)
             {
                 report_error("无符号整数过长！");
-                exit(1);
+                // exit(1);
+                return;
             }
             ch = fgetc(src);
         }
@@ -223,7 +225,8 @@ void single_scan(FILE *src, FILE *dest, int _stdout)
             else
             {
                 report_error("非法标识符：&。您是否要使用“&&”？");
-                exit(2);
+                // exit(2);
+                return;
             }
             break;
 
@@ -235,7 +238,8 @@ void single_scan(FILE *src, FILE *dest, int _stdout)
             else
             {
                 report_error("非法标识符：|。您是否要使用“||”？");
-                exit(2);
+                // exit(2);
+                return;
             }
             break;
 
@@ -247,7 +251,8 @@ void single_scan(FILE *src, FILE *dest, int _stdout)
         default:
             sprintf(err_msg, "无法识别字符：%c", ch);
             report_error(err_msg);
-            exit(2);
+            // exit(2);
+            return;
         }
     }
 }
