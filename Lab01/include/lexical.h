@@ -41,6 +41,7 @@
 #define SUBE 36         // -=
 #define MULE 37         // *=
 #define DIVE 38         // /=
+#define ASSIGN 39       // =
 
 int lookup(char *token);
 void retract(FILE *fp);

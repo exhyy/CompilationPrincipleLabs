@@ -156,6 +156,18 @@ void single_scan(FILE *src, FILE *dest, int _stdout)
                 out(DIV, "", dest, _stdout);
             }
             break;
+        
+        case '=':
+            // =或==
+            ch = fgetc(src);
+            if (ch == '=')
+                out(EQ, "", dest, _stdout);
+            else
+            {
+                retract(src);
+                out(ASSIGN, "", dest, _stdout);
+            }
+            break;
 
         case ';':
             // ;
