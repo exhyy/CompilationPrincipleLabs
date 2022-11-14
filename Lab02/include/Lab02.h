@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
+#include <vector>
 
 #define EOI 0
 #define VOID 1
@@ -50,21 +51,27 @@ class Lab02
 {
 private:
     int wordId;
+    std::string wordValue;
+    int current;
     std::ifstream infile;
-    bool pass;
+    std::string errorMessage;
+    std::vector<std::string> idToWord;
 
 public:
     Lab02(std::string filename);
-    void S();
-    void E();
-    void E_prime();
-    void T();
-    void T_prime();
-    void F();
-    void V();
+    bool S();
+    bool E();
+    bool E_prime();
+    bool T();
+    bool T_prime();
+    bool F();
+    bool A();
+    bool M();
+    bool V();
     void advance();
     bool match(int wordId);
     bool run();
+    void printError();
 };
 
 #endif

@@ -12,7 +12,10 @@ int main(int argc, char *argv[])
         if (task.run())
             std::cout << "语法分析通过" << std::endl;
         else
+        {
+            task.printError();
             std::cout << "语法分析失败" << std::endl;
+        }
     } catch (std::string &msg)
     {
         std::cerr << msg << std::endl;
