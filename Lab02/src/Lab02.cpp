@@ -269,6 +269,7 @@ void Lab02::printError()
     int location = 0, cnt = 1;
     int t = current;
     std::cerr << " ";
+    infile.clear();
     infile.seekg(0, std::ios::beg);
     advance();
     while (!match(EOI))
