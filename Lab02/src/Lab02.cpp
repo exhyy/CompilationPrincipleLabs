@@ -254,7 +254,14 @@ bool Lab02::run()
     errorMessage = "";
     current = 0;
     advance();
-    return S();
+    if (!S())
+        return false;
+    if (!match(EOI))
+    {
+        errorMessage = "未到结尾";
+        return false;
+    }
+    return true;
 }
 
 void Lab02::printError()
