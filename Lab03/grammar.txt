@@ -1,0 +1,9 @@
+S->V=E
+E->TE'
+E'->ATE'|\epsilon
+T->FT'
+T'->MFT'|\epsilon
+F->(E)|i
+A->+|-
+M->*|/
+V->i
