@@ -20,6 +20,7 @@ struct SymbolCmp
 class FirstSet
 {
 private:
+    std::string _filename;
     std::ifstream _infile;
     std::string _epsilon;
     std::map<std::string, std::set<std::string>> _data;
@@ -33,9 +34,12 @@ private:
 
 public:
     FirstSet(std::string filename, std::string epsilon);
+    FirstSet(const FirstSet &firstSet);
     std::set<std::string, SymbolCmp> nonterminal();
     std::set<std::string, SymbolCmp> terminal();
     std::map<std::string, std::set<std::string>> data();
+    std::string epsilon();
+    std::set<std::string> string(std::string str);
 };
 
 #endif

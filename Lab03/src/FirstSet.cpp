@@ -59,6 +59,7 @@ std::vector<std::string> FirstSet::_splitSymbols(std::string str)
 
 FirstSet::FirstSet(std::string filename, std::string epsilon)
 {
+    _filename = filename;
     _epsilon = epsilon;
     _infile.open(filename, std::ios::in);
     if (!_infile.is_open())
@@ -69,6 +70,21 @@ FirstSet::FirstSet(std::string filename, std::string epsilon)
     _getNonterminal();
     _getTerminal();
     _getData();
+}
+
+FirstSet::FirstSet(const FirstSet &firstSet)
+{
+    _filename = firstSet._filename;
+    _infile.open(_filename, std::ios::in);
+    if (!_infile.is_open())
+    {
+        std::string msg = "无法打开" + _filename;
+        throw msg;
+    }
+    _epsilon = firstSet._epsilon;
+    _data = firstSet._data;
+    _terminal = firstSet._terminal;
+    _nonterminal = firstSet._nonterminal;
 }
 
 void FirstSet::_getNonterminal()
@@ -294,4 +310,41 @@ void FirstSet::_getData()
 std::map<std::string, std::set<std::string>> FirstSet::data()
 {
     return _data;
+}
+
+std::string FirstSet::epsilon()
+{
+    return _epsilon;
+}
+
+std::set<std::string> FirstSet::string(std::string str)
+{
+    std::set<std::string> result;
+    auto symbols = _splitSymbols(str);
+    auto first1 = _data[symbols[0]];
+    first1.erase(_epsilon);
+    result.merge(first1);
+    for (int i = 0; i < int(symbols.size()); i++)
+    {
+        auto first = _data[symbols[i]];
+        if (i != int(symbols.size()) - 1)
+        {
+            if (first.find(_epsilon) != first.end())
+            {
+                auto firstNext = _data[symbols[i + 1]];
+                firstNext.erase(_epsilon);
+                result.merge(firstNext);
+            }
+            else
+                break;
+        }
+        else
+        {
+            if (first.find(_epsilon) != first.end())
+            {
+                result.insert(_epsilon);
+            }
+        }
+    }
+    return result;
 }
