@@ -1,5 +1,6 @@
 #include "FirstSet.h"
 #include "FollowSet.h"
+#include "ParsingTable.h"
 #include <set>
 #include <string>
 #include <iostream>
@@ -45,6 +46,13 @@ int main(int argc, char *argv[])
             std::cout << f << " ";
         }
         std::cout << std::endl;
+    }
+
+    ParsingTable parsingTable(filename, firstSet, followSet);
+    auto tableData = parsingTable.data();
+    for (auto d : tableData)
+    {
+        std::cout << "TABLE(" << d.first.first << ", " << d.first.second << "): " << d.second << std::endl;
     }
 
     return 0;

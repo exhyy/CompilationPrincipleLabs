@@ -1,62 +1,6 @@
 #include "FirstSet.h"
 #include <iostream>
 
-std::vector<std::string> FirstSet::_splitString(std::string str, std::string separator)
-{
-    std::vector<std::string> result;
-    int index = str.find(separator);
-    while (index != -1)
-    {
-        result.push_back(str.substr(0, index));
-        str.erase(0, index + 1);
-        index = str.find(separator);
-    }
-    result.push_back(str);
-    return result;
-}
-
-std::vector<std::string> FirstSet::_splitSymbols(std::string str)
-{
-    std::vector<std::string> result;
-    while (str.length() > 0)
-    {
-        std::string symbol = "";
-        for (auto t : _terminal)
-        {
-            if (str.find(t) == 0 && t.length() > symbol.length())
-            {
-                symbol = t;
-            }
-        }
-        if (symbol == "")
-        {
-            for (auto n : _nonterminal)
-            {
-                if (str.find(n) == 0 && n.length() > symbol.length())
-                {
-                    symbol = n;
-                }
-            }
-        }
-        if (symbol == "")
-        {
-            if (str.find(_epsilon) == 0)
-            {
-                symbol = _epsilon;
-            }
-        }
-        if (symbol == "")
-        {
-            std::cerr << "错误：字符串并非全由符号组成" << std::endl;
-            std::vector<std::string> emptyVector;
-            return emptyVector;
-        }
-        result.push_back(symbol);
-        str.erase(0, symbol.length());
-    }
-    return result;
-}
-
 FirstSet::FirstSet(std::string filename, std::string epsilon)
 {
     _filename = filename;
@@ -70,6 +14,7 @@ FirstSet::FirstSet(std::string filename, std::string epsilon)
     _getNonterminal();
     _getTerminal();
     _getData();
+    _data[_epsilon] = std::set<std::string>({_epsilon});
 }
 
 FirstSet::FirstSet(const FirstSet &firstSet)
@@ -139,7 +84,7 @@ void FirstSet::_getTerminal()
                 index = right.find(n);
             }
         }
-        std::vector<std::string> subStrings = _splitString(right, "|");
+        std::vector<std::string> subStrings = splitString(right, "|");
         for (auto str : subStrings)
         {
             for (int i = 0; i < int(str.length()); i++)
@@ -184,7 +129,7 @@ void FirstSet::_getData()
             if (left != n)
                 continue;
             std::string right = line.substr(index + 2);
-            std::vector<std::string> subStrings = _splitString(right, "|");
+            std::vector<std::string> subStrings = splitString(right, "|");
             for (auto str : subStrings)
             {
                 std::string firstSymbol = "";
@@ -220,10 +165,10 @@ void FirstSet::_getData()
                 continue;
             std::string left = line.substr(0, index);
             std::string right = line.substr(index + 2);
-            std::vector<std::string> splitedRight = _splitString(right, "|");
+            std::vector<std::string> splitedRight = splitString(right, "|");
             for (auto singleRight : splitedRight)
             {
-                auto symbols = _splitSymbols(singleRight);
+                auto symbols = splitSymbols(singleRight, _terminal, _nonterminal, _epsilon);
                 if (_nonterminal.find(symbols[0]) != _nonterminal.end())
                 {
                     int oldSize = _data[left].size();
@@ -320,7 +265,7 @@ std::string FirstSet::epsilon()
 std::set<std::string> FirstSet::string(std::string str)
 {
     std::set<std::string> result;
-    auto symbols = _splitSymbols(str);
+    auto symbols = splitSymbols(str, _terminal, _nonterminal, _epsilon);
     auto first1 = _data[symbols[0]];
     first1.erase(_epsilon);
     result.merge(first1);

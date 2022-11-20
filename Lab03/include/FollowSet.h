@@ -1,7 +1,8 @@
 #ifndef FOLLOWSET_H_
-#define FOLLOWSET_T_
+#define FOLLOWSET_H_
 
 #include "FirstSet.h"
+#include "utils.h"
 #include <fstream>
 #include <map>
 #include <string>
@@ -16,8 +17,6 @@ private:
     std::set<std::string, SymbolCmp> _terminal;
     std::set<std::string, SymbolCmp> _nonterminal;
     std::map<std::string, std::set<std::string>> _data;
-    static std::vector<std::string> _splitString(std::string str, std::string separator);
-    std::vector<std::string> _splitSymbols(std::string str);
     void _getData();
 
 public:
