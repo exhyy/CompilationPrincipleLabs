@@ -54,3 +54,23 @@ std::map<PSS, std::string> ParsingTable::data()
 {
     return _data;
 }
+
+std::string ParsingTable::epsilon()
+{
+    return _epsilon;
+}
+
+std::string ParsingTable::end()
+{
+    return _followSet.end();
+}
+
+std::set<std::string, SymbolCmp> ParsingTable::terminal()
+{
+    return _firstSet.terminal();
+}
+
+std::set<std::string, SymbolCmp> ParsingTable::nonterminal()
+{
+    return _firstSet.nonterminal();
+}

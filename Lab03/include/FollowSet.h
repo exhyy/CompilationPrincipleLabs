@@ -22,6 +22,8 @@ private:
 public:
     FollowSet(std::string filename, FirstSet firstSet, std::string end);
     std::map<std::string, std::set<std::string>> data();
+    std::string epsilon();
+    std::string end();
 };
 
 #endif

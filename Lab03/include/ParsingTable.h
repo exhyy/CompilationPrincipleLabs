@@ -23,6 +23,10 @@ private:
 public:
     ParsingTable(std::string filename, FirstSet &firstSet, FollowSet &followSet);
     std::map<PSS, std::string> data();
+    std::string epsilon();
+    std::string end();
+    std::set<std::string, SymbolCmp> terminal();
+    std::set<std::string, SymbolCmp> nonterminal();
 };
 
 #endif

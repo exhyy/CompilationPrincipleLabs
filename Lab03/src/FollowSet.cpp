@@ -119,3 +119,13 @@ std::map<std::string, std::set<std::string>> FollowSet::data()
 {
     return _data;
 }
+
+std::string FollowSet::epsilon()
+{
+    return _epsilon;
+}
+
+std::string FollowSet::end()
+{
+    return _end;
+}
