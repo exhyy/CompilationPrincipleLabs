@@ -5,9 +5,10 @@
 #include <iostream>
 #include <vector>
 
-int main()
+int main(int argc, char *argv[])
 {
-    FirstSet firstSet("/home/yuyao/code/CompilationPrincipleLabs/Lab03/grammar.txt", "\\epsilon");
+    std::string filename = argv[1];
+    FirstSet firstSet(filename, "\\epsilon");
     std::set<std::string, SymbolCmp> nonterminal = firstSet.nonterminal();
     std::set<std::string, SymbolCmp> terminal = firstSet.terminal();
 
@@ -34,7 +35,7 @@ int main()
         std::cout << std::endl;
     }
 
-    FollowSet followSet("/home/yuyao/code/CompilationPrincipleLabs/Lab03/grammar.txt", firstSet, "#");
+    FollowSet followSet(filename, firstSet, "#");
     auto followData = followSet.data();
     for (auto d : followData)
     {
