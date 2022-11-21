@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <sstream>
 #include <algorithm>
+#include <cstdio>
 
 LL1Parser::LL1Parser(std::string filename, ParsingTable &parsingTable, std::string start) : _parsingTable(parsingTable)
 {
@@ -17,7 +18,7 @@ LL1Parser::LL1Parser(std::string filename, ParsingTable &parsingTable, std::stri
     }
 }
 
-int LL1Parser::parse()
+int LL1Parser::parse(bool debug)
 {
     auto parsingTable = _parsingTable.data();
     auto terminal = _parsingTable.terminal();
@@ -34,6 +35,13 @@ int LL1Parser::parse()
     advance();
     cnt++;
 
+    if (debug)
+    {
+        fprintf(stdout, "%-20s%-8s%-12s\n", "Stack", "Symbol", "Formula");
+        auto stackString = _getStackString();
+        fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "Init");
+    }
+
     while (true)
     {
         std::string X = _stack.top();
@@ -43,18 +51,44 @@ int LL1Parser::parse()
             // X是终结符
             if (X == _symbol)
             {
+                if (debug)
+                {
+                    auto stackString = _getStackString(X);
+                    fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "Next Symbol");
+                }
                 advance();
                 cnt++;
             }
             else
+            {
+                if (debug)
+                {
+                    auto stackString = _getStackString(X);
+                    fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "ERROR");
+                }
                 return cnt;
+            }
         }
         else if (X == _end)
         {
             if (X == _symbol)
+            {
+                if (debug)
+                {
+                    auto stackString = _getStackString(X);
+                    fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "Finished");
+                }
                 return 0;
+            }
             else
+            {
+                if (debug)
+                {
+                    auto stackString = _getStackString(X);
+                    fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "ERROR");
+                }
                 return cnt;
+            }
         }
         else
         {
@@ -62,6 +96,11 @@ int LL1Parser::parse()
             if (parsingTable.find(key) != parsingTable.end())
             {
                 auto value = parsingTable[key];
+                if (debug)
+                {
+                    auto stackString = _getStackString(X);
+                    fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), value.c_str());
+                }
                 if (value == _epsilon)
                     continue;
                 auto symbols = splitSymbols(value, terminal, nonterminal, _epsilon);
@@ -70,7 +109,14 @@ int LL1Parser::parse()
                     _stack.push(x);
             }
             else
+            {
+                if (debug)
+                {
+                    auto stackString = _getStackString(X);
+                    fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "ERROR");
+                }
                 return cnt;
+            }
         }
     }
 }
@@ -95,4 +141,20 @@ void LL1Parser::advance()
         this->_wordId = EOI;
     }
     _symbol = _idToSymbol[_wordId];
+}
+
+std::string LL1Parser::_getStackString(std::string poped)
+{
+    auto stack = _stack;
+    if (poped != "")
+        stack.push(poped);
+    std::string result = "";
+    while (!stack.empty())
+    {
+        auto symbol = stack.top();
+        stack.pop();
+        result += symbol;
+    }
+    std::reverse(result.begin(), result.end());
+    return result;
 }

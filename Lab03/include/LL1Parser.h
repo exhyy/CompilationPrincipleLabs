@@ -61,10 +61,11 @@ private:
     std::string _wordValue;
     std::string _symbol;
     std::vector<std::string> _idToSymbol;
+    std::string _getStackString(std::string poped = "");
 
 public:
     LL1Parser(std::string filename, ParsingTable &parsingTable, std::string start);
-    int parse();
+    int parse(bool debug = false);
     void advance();
 };
 

@@ -23,12 +23,16 @@ int main(int argc, char *argv[])
     {
         std::cout << "FIRST集如下：" << std::endl;
         firstSet.print();
-        std::cout << "FOLLOW集如下：" << std::endl;
+        std::cout << std::endl
+                  << "FOLLOW集如下：" << std::endl;
         followSet.print();
-        std::cout << "LL1分析表如下：" << std::endl;
+        std::cout << std::endl
+                  << "LL1分析表如下：" << std::endl;
         parsingTable.print();
+        std::cout << std::endl
+                  << "LL1分析过程如下：" << std::endl;
     }
-    int result = parser.parse();
+    int result = parser.parse(debug);
     if (result == 0)
         std::cout << "语法分析通过！" << std::endl;
     else

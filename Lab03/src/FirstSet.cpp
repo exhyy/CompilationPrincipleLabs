@@ -149,7 +149,6 @@ void FirstSet::_getData()
     }
 
     // 步骤3
-    // TODO: 设置一个flag检测FIRST(x)是否发生变化
     bool flag = false;
     do
     {
@@ -190,10 +189,6 @@ void FirstSet::_getData()
                     }
                     if (maxNonterminalLength >= 1)
                     {
-                        // TODO: 第四章(2)PPT第29页的ii
-                        // 遍历[1, maxNonterminalLength-1]，下标为i
-                        // 若epsilon属于FIRST(Y_i)，则将FIRST(Y_(i+1))-{epsilon}加入到FIRST(x)中
-                        // 若epsilon不属于FIRST(Y_i)，则直接结束循环
                         int limit;
                         if (maxNonterminalLength == int(symbols.size()))
                             limit = symbols.size() - 1;
