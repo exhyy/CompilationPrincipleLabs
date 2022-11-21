@@ -1,4 +1,5 @@
 #include "ParsingTable.h"
+#include <cstdio>
 
 ParsingTable::ParsingTable(std::string filename, FirstSet &firstSet, FollowSet &followSet) : _firstSet(firstSet), _followSet(followSet)
 {
@@ -73,4 +74,28 @@ std::set<std::string, SymbolCmp> ParsingTable::terminal()
 std::set<std::string, SymbolCmp> ParsingTable::nonterminal()
 {
     return _firstSet.nonterminal();
+}
+
+void ParsingTable::print()
+{
+    auto terminal = _firstSet.terminal();
+    auto nonterminal = _firstSet.nonterminal();
+    fprintf(stdout, "%-10s", "");
+    for (auto t : terminal)
+        fprintf(stdout, "%-10s", t.c_str());
+    fprintf(stdout, "\n");
+
+    for (auto n : nonterminal)
+    {
+        fprintf(stdout, "%-10s", n.c_str());
+        for (auto t : terminal)
+        {
+            PSS key(n, t);
+            if (_data.find(key) == _data.end())
+                fprintf(stdout, "%-10s", "ERROR");
+            else
+                fprintf(stdout, "%-10s", _data[key].c_str());
+        }
+        fprintf(stdout, "\n");
+    }
 }

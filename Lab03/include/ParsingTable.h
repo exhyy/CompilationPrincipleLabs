@@ -27,6 +27,7 @@ public:
     std::string end();
     std::set<std::string, SymbolCmp> terminal();
     std::set<std::string, SymbolCmp> nonterminal();
+    void print();
 };
 
 #endif

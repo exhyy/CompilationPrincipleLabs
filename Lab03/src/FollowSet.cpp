@@ -129,3 +129,16 @@ std::string FollowSet::end()
 {
     return _end;
 }
+
+void FollowSet::print()
+{
+    for (auto d : _data)
+    {
+        std::cout << "FOLLOW(" << d.first << "): ";
+        for (auto item : d.second)
+        {
+            std::cout << item << " ";
+        }
+        std::cout << std::endl;
+    }
+}

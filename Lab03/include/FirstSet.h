@@ -29,6 +29,7 @@ public:
     std::map<std::string, std::set<std::string>> data();
     std::string epsilon();
     std::set<std::string> string(std::string str);
+    void print();
 };
 
 #endif

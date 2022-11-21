@@ -293,3 +293,16 @@ std::set<std::string> FirstSet::string(std::string str)
     }
     return result;
 }
+
+void FirstSet::print()
+{
+    for (auto d : _data)
+    {
+        std::cout << "FIRST(" << d.first << "): ";
+        for (auto item : d.second)
+        {
+            std::cout << item << " ";
+        }
+        std::cout << std::endl;
+    }
+}
