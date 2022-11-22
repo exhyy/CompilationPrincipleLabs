@@ -19,6 +19,7 @@ PrecedenceTable::PrecedenceTable(std::string filename)
     }
     _getFirstvt();
     _getLastvt();
+    _getData();
 }
 
 void PrecedenceTable::_getNonterminal()
@@ -211,7 +212,59 @@ void PrecedenceTable::_getLastvt()
 
 void PrecedenceTable::_getData()
 {
-    std::stack<PSS> stack;
+    _infile.clear();
+    _infile.seekg(0, std::ios::beg);
+    std::string line;
+    while (!_infile.eof())
+    {
+        getline(_infile, line);
+        int index = line.find("->");
+        if (index == -1)
+            continue;
+        std::string left = line.substr(0, index);
+        std::string right = line.substr(index + 2);
+        auto splitedRight = splitString(right, "|");
+        for (auto singleRight : splitedRight)
+        {
+            auto symbols = splitSymbols(singleRight, _terminal, _nonterminal, "");
+            for (int i = 0; i < int(symbols.size()) - 1; i++)
+            {
+                // ...ab...
+                if (_terminal.find(symbols[i]) != _terminal.end() && _terminal.find(symbols[i + 1]) != _terminal.end())
+                {
+                    PSS key(symbols[i], symbols[i + 1]);
+                    _data[key] = PRECEDENCE_EQ;
+                }
+
+                // ...aVb...
+                if (i < int(symbols.size()) - 2 && _terminal.find(symbols[i]) != _terminal.end() && _terminal.find(symbols[i + 2]) != _terminal.end() && _nonterminal.find(symbols[i + 1]) != _nonterminal.end())
+                {
+                    PSS key(symbols[i], symbols[i + 2]);
+                    _data[key] = PRECEDENCE_EQ;
+                }
+
+                // ...aU...
+                if (_terminal.find(symbols[i]) != _terminal.end() && _nonterminal.find(symbols[i + 1]) != _nonterminal.end())
+                {
+                    for (auto b : _firstvt[symbols[i + 1]])
+                    {
+                        PSS key(symbols[i], b);
+                        _data[key] = PRECEDENCE_LT;
+                    }
+                }
+
+                // ...Ub...
+                if (_nonterminal.find(symbols[i]) != _nonterminal.end() && _terminal.find(symbols[i + 1]) != _terminal.end())
+                {
+                    for (auto a : _lastvt[symbols[i]])
+                    {
+                        PSS key(a, symbols[i + 1]);
+                        _data[key] = PRECEDENCE_GT;
+                    }
+                }
+            }
+        }
+    }
 }
 
 std::set<std::string, SymbolCmp> PrecedenceTable::terminal()
@@ -232,4 +285,9 @@ std::map<std::string, std::set<std::string>> PrecedenceTable::firstvt()
 std::map<std::string, std::set<std::string>> PrecedenceTable::lastvt()
 {
     return _lastvt;
+}
+
+std::map<PSS, int> PrecedenceTable::data()
+{
+    return _data;
 }

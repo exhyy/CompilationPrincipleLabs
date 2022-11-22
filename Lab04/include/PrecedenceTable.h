@@ -35,6 +35,7 @@ public:
     std::set<std::string, SymbolCmp> nonterminal();
     std::map<std::string, std::set<std::string>> firstvt();
     std::map<std::string, std::set<std::string>> lastvt();
+    std::map<PSS, int> data();
 };
 
 #endif
