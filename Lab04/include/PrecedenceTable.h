@@ -20,13 +20,21 @@ private:
     std::ifstream _infile;
     std::set<std::string, SymbolCmp> _terminal;
     std::set<std::string, SymbolCmp> _nonterminal;
+    std::map<std::string, std::set<std::string>> _firstvt;
+    std::map<std::string, std::set<std::string>> _lastvt;
     std::map<PSS, int> _data;
     void _getNonterminal();
     void _getTerminal();
+    void _getFirstvt();
+    void _getLastvt();
     void _getData();
 
 public:
     PrecedenceTable(std::string filename);
+    std::set<std::string, SymbolCmp> terminal();
+    std::set<std::string, SymbolCmp> nonterminal();
+    std::map<std::string, std::set<std::string>> firstvt();
+    std::map<std::string, std::set<std::string>> lastvt();
 };
 
 #endif
