@@ -1,10 +1,13 @@
 #include "PrecedenceTable.h"
+#include "OPGParser.h"
 #include <iostream>
 #include <cstdio>
 
-int main()
+int main(int argc, char *argv[])
 {
-    PrecedenceTable precedenceTable("grammar.txt");
+    std::string grammar = argv[1];
+    std::string input = argv[2];
+    PrecedenceTable precedenceTable(grammar, "#");
     auto terminal = precedenceTable.terminal();
     auto nonterminal = precedenceTable.nonterminal();
 
@@ -42,31 +45,12 @@ int main()
         std::cout << std::endl;
     }
 
-    auto tableData = precedenceTable.data();
-    fprintf(stdout, "%-5s", "");
-    for (auto t : terminal)
-        fprintf(stdout, "%-5s", t.c_str());
-    fprintf(stdout, "\n");
-    for (auto t1 : terminal)
-    {
-        fprintf(stdout, "%-5s", t1.c_str());
-        for (auto t2 : terminal)
-        {
-            PSS key(t1, t2);
-            if (tableData.find(key) != tableData.end())
-            {
-                int value = tableData[key];
-                if (value == PRECEDENCE_EQ)
-                    fprintf(stdout, "%-5s", "=");
-                else if (value == PRECEDENCE_LT)
-                    fprintf(stdout, "%-5s", "<");
-                else if (value == PRECEDENCE_GT)
-                    fprintf(stdout, "%-5s", ">");
-            }
-            else
-                fprintf(stdout, "%-5s", "NULL");
-        }
-        fprintf(stdout, "\n");
-    }
+    precedenceTable.print();
+
+    OPGParser parser(input, grammar, precedenceTable, "#");
+    if (parser.parse() == 0)
+        std::cout << "OK" << std::endl;
+    else
+        std::cout << "Fail" << std::endl;
     return 0;
 }

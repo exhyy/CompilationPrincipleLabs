@@ -1,8 +1,10 @@
 #include "PrecedenceTable.h"
 #include <stack>
 
-PrecedenceTable::PrecedenceTable(std::string filename)
+PrecedenceTable::PrecedenceTable(std::string filename, std::string end)
 {
+    _filename = filename;
+    _end = end;
     _infile.open(filename, std::ios::in);
     if (!_infile.is_open())
     {
@@ -20,6 +22,22 @@ PrecedenceTable::PrecedenceTable(std::string filename)
     _getFirstvt();
     _getLastvt();
     _getData();
+}
+
+PrecedenceTable::PrecedenceTable(const PrecedenceTable &that)
+{
+    _filename = that._filename;
+    _infile.open(_filename, std::ios::in);
+    if (!_infile.is_open())
+    {
+        std::string msg = "无法打开" + _filename;
+        throw msg;
+    }
+    _terminal = that._terminal;
+    _nonterminal = that._nonterminal;
+    _firstvt = that._firstvt;
+    _lastvt = that._lastvt;
+    _data = that._data;
 }
 
 void PrecedenceTable::_getNonterminal()
@@ -265,6 +283,14 @@ void PrecedenceTable::_getData()
             }
         }
     }
+
+    for (auto t : _terminal)
+    {
+        PSS key(_end, t);
+        _data[key] = PRECEDENCE_LT;
+        key = PSS(t, _end);
+        _data[key] = PRECEDENCE_GT;
+    }
 }
 
 std::set<std::string, SymbolCmp> PrecedenceTable::terminal()
@@ -290,4 +316,35 @@ std::map<std::string, std::set<std::string>> PrecedenceTable::lastvt()
 std::map<PSS, int> PrecedenceTable::data()
 {
     return _data;
+}
+
+void PrecedenceTable::print()
+{
+    auto symbols = _terminal;
+    symbols.insert(_end);
+    fprintf(stdout, "%-5s", "");
+    for (auto s : symbols)
+        fprintf(stdout, "%-5s", s.c_str());
+    fprintf(stdout, "\n");
+    for (auto s1 : symbols)
+    {
+        fprintf(stdout, "%-5s", s1.c_str());
+        for (auto s2 : symbols)
+        {
+            PSS key(s1, s2);
+            if (_data.find(key) != _data.end())
+            {
+                int value = _data[key];
+                if (value == PRECEDENCE_EQ)
+                    fprintf(stdout, "%-5s", "=");
+                else if (value == PRECEDENCE_LT)
+                    fprintf(stdout, "%-5s", "<");
+                else if (value == PRECEDENCE_GT)
+                    fprintf(stdout, "%-5s", ">");
+            }
+            else
+                fprintf(stdout, "%-5s", "NULL");
+        }
+        fprintf(stdout, "\n");
+    }
 }

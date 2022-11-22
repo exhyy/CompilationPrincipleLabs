@@ -18,6 +18,8 @@ class PrecedenceTable
 {
 private:
     std::ifstream _infile;
+    std::string _filename;
+    std::string _end;
     std::set<std::string, SymbolCmp> _terminal;
     std::set<std::string, SymbolCmp> _nonterminal;
     std::map<std::string, std::set<std::string>> _firstvt;
@@ -30,12 +32,14 @@ private:
     void _getData();
 
 public:
-    PrecedenceTable(std::string filename);
+    PrecedenceTable(std::string filename, std::string end);
+    PrecedenceTable(const PrecedenceTable &that);
     std::set<std::string, SymbolCmp> terminal();
     std::set<std::string, SymbolCmp> nonterminal();
     std::map<std::string, std::set<std::string>> firstvt();
     std::map<std::string, std::set<std::string>> lastvt();
     std::map<PSS, int> data();
+    void print();
 };
 
 #endif
