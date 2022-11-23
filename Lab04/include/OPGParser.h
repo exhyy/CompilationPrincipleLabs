@@ -61,10 +61,12 @@ private:
     std::vector<std::string> _idToSymbol;
     std::map<std::string, std::string> _reduction;
     void _getReduction();
+    std::string _getStackString(std::string poped = "");
+    std::string _getPrecedenceString();
 
 public:
     OPGParser(std::string inputFilename, std::string grammarFilename, PrecedenceTable precedenceTable, std::string end);
-    int parse();
+    int parse(bool debug = false);
     void advance();
 };
 

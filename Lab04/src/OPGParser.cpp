@@ -1,6 +1,8 @@
 #include "OPGParser.h"
 #include "utils.h"
 #include <sstream>
+#include <cstdio>
+#include <algorithm>
 
 OPGParser::OPGParser(std::string inputFilename, std::string grammarFilename, PrecedenceTable precedenceTable, std::string end) : _precedenceTable(precedenceTable)
 {
@@ -16,11 +18,12 @@ OPGParser::OPGParser(std::string inputFilename, std::string grammarFilename, Pre
     _getReduction();
 }
 
-int OPGParser::parse()
+int OPGParser::parse(bool debug)
 {
     auto terminal = _precedenceTable.terminal();
     auto nonterminal = _precedenceTable.nonterminal();
     auto precedenceTable = _precedenceTable.data();
+    int cnt = 0;
     _input.clear();
     _input.seekg(0, std::ios::beg);
     while (!_stack.empty())
@@ -29,6 +32,15 @@ int OPGParser::parse()
     int i = 0, j;
     _stack.push_back(_end);
     advance();
+    cnt++;
+
+    if (debug)
+    {
+        fprintf(stdout, "%-24s%-15s%-8s%-12s\n", "Stack", "Precedence", "Symbol", "Operation");
+        auto stackString = _getStackString();
+        auto precedenceString = _getPrecedenceString();
+        fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "Init");
+    }
 
     while (true)
     {
@@ -51,7 +63,15 @@ int OPGParser::parse()
                         j--;
                     key = PSS(_stack[j], Q);
                     if (precedenceTable.find(key) == precedenceTable.end())
-                        return 1;
+                    {
+                        if (debug)
+                        {
+                            auto stackString = _getStackString();
+                            auto precedenceString = _getPrecedenceString();
+                            fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "ERROR");
+                        }
+                        return cnt;
+                    }
                 } while (precedenceTable[key] != PRECEDENCE_LT);
 
                 // 归约
@@ -60,29 +80,67 @@ int OPGParser::parse()
                     leftmost += _stack[k];
                 i = j + 1;
                 // TODO：先判断_reduction[leftmost]是否存在，再弹出
-                while (_stack.size() > i)
-                    _stack.pop_back();
-                // _stack[i] = _reduction[leftmost];
-                _stack.push_back(_reduction[leftmost]);
+                if (_reduction.find(leftmost) != _reduction.end())
+                {
+                    if (debug)
+                    {
+                        auto stackString = _getStackString();
+                        auto precedenceString = _getPrecedenceString();
+                        fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "Reduce");
+                    }
 
-                if (i == 1 && _symbol == _end)
-                    return 0;
+                    while (int(_stack.size()) > i)
+                        _stack.pop_back();
+                    // _stack[i] = _reduction[leftmost];
+                    _stack.push_back(_reduction[leftmost]);
+
+                    if (i == 1 && _symbol == _end)
+                    {
+                        if (debug)
+                        {
+                            auto stackString = _getStackString();
+                            auto precedenceString = _getPrecedenceString();
+                            fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "Accept");
+                        }
+                        return 0;
+                    }
+                }
+                else
+                {
+                    if (debug)
+                    {
+                        auto stackString = _getStackString();
+                        auto precedenceString = _getPrecedenceString();
+                        fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "ERROR");
+                    }
+                    return cnt;
+                }
             }
             else
             {
                 // 移进
+                if (debug)
+                {
+                    auto stackString = _getStackString();
+                    auto precedenceString = _getPrecedenceString();
+                    fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "Push");
+                }
+
                 i++;
                 _stack.push_back(_symbol);
-                // if (i >= int(_stack.size()))
-                //     _stack.push_back(_symbol);
-                // else
-                //     _stack[i] = _symbol;
                 advance();
+                cnt++;
             }
         }
         else
         {
-            return 1;
+            if (debug)
+            {
+                auto stackString = _getStackString();
+                auto precedenceString = _getPrecedenceString();
+                fprintf(stdout, "%-24s%-15s%-8s%-12s\n", stackString.c_str(), precedenceString.c_str(), _symbol.c_str(), "ERROR");
+            }
+            return cnt;
         }
     }
 }
@@ -136,7 +194,7 @@ void OPGParser::_getReduction()
             // OPG里的非终结符无意义，因此全部换成“N”
             auto symbols = splitSymbols(singleRight, terminal, nonterminal, "");
             std::string key = "";
-            for (int i = 0; i < symbols.size(); i++)
+            for (int i = 0; i < int(symbols.size()); i++)
             {
                 if (nonterminal.find(symbols[i]) != nonterminal.end())
                     symbols[i] = "N";
@@ -145,4 +203,55 @@ void OPGParser::_getReduction()
             _reduction[key] = "N";
         }
     }
+}
+
+std::string OPGParser::_getStackString(std::string poped)
+{
+    auto stack = _stack;
+    if (poped != "")
+        stack.push_back(poped);
+    std::string result = "";
+    while (!stack.empty())
+    {
+        auto symbol = stack.back();
+        stack.pop_back();
+        result += symbol;
+    }
+    std::reverse(result.begin(), result.end());
+    return result;
+}
+
+std::string OPGParser::_getPrecedenceString()
+{
+    auto precedenceTable = _precedenceTable.data();
+    auto terminal = _precedenceTable.terminal();
+    std::string result = "";
+    std::map<int, std::string> idToOperator;
+    idToOperator[PRECEDENCE_EQ] = "=";
+    idToOperator[PRECEDENCE_LT] = "<";
+    idToOperator[PRECEDENCE_GT] = ">";
+    int current = _stack.size() - 1;
+    if ((_stack[current] != _end && terminal.find(_stack[current]) == terminal.end()))
+        current--;
+
+    PSS key(_stack[current], _symbol);
+    if (precedenceTable.find(key) == precedenceTable.end())
+        return "";
+    result += _symbol;
+    result += idToOperator[precedenceTable[key]];
+    result += _stack[current];
+    while (precedenceTable[key] != PRECEDENCE_LT)
+    {
+        int i = current - 1;
+        if (_stack[i] != _end && terminal.find(_stack[i]) == terminal.end())
+            i--;
+        key = PSS(_stack[i], _stack[current]);
+        if (precedenceTable.find(key) == precedenceTable.end())
+            return "";
+        result += idToOperator[precedenceTable[key]];
+        result += _stack[i];
+        current = i;
+    }
+    std::reverse(result.begin(), result.end());
+    return result;
 }
