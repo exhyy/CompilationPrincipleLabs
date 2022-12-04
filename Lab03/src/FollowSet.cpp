@@ -31,42 +31,41 @@ void FollowSet::_getData()
     std::string right;
     _data[left].insert(_end);
 
+    // 第二步
+    _infile.clear();
+    _infile.seekg(0, std::ios::beg);
+    while (!_infile.eof())
+    {
+        getline(_infile, line);
+        index = line.find("->");
+        if (index == -1)
+            continue;
+        left = line.substr(0, index);
+        right = line.substr(index + 2);
+        auto splitedRight = splitString(right, "|");
+        for (auto singleRight : splitedRight)
+        {
+            auto symbols = splitSymbols(singleRight, _terminal, _nonterminal, _epsilon);
+            for (int i = 0; i < int(symbols.size()) - 1; i++)
+            {
+                if (_nonterminal.find(symbols[i]) != _nonterminal.end())
+                {
+                    std::string behind = "";
+                    for (int j = i + 1; j < int(symbols.size()); j++)
+                        behind += symbols[j];
+                    auto newSet = _firstSet.string(behind);
+                    newSet.erase(_epsilon);
+                    _data[symbols[i]].merge(newSet);
+                }
+            }
+        }
+    }
+
+    // 第三步
     bool flag = false;
     do
     {
         flag = false;
-        _infile.clear();
-        _infile.seekg(0, std::ios::beg);
-        while (!_infile.eof())
-        {
-            getline(_infile, line);
-            index = line.find("->");
-            if (index == -1)
-                continue;
-            left = line.substr(0, index);
-            right = line.substr(index + 2);
-            auto splitedRight = splitString(right, "|");
-            for (auto singleRight : splitedRight)
-            {
-                auto symbols = splitSymbols(singleRight, _terminal, _nonterminal, _epsilon);
-                for (int i = 0; i < int(symbols.size()) - 1; i++)
-                {
-                    if (_nonterminal.find(symbols[i]) != _nonterminal.end())
-                    {
-                        auto oldSize = _data[symbols[i]].size();
-                        std::string behind = "";
-                        for (int j = i + 1; j < int(symbols.size()); j++)
-                            behind += symbols[j];
-                        auto newSet = _firstSet.string(behind);
-                        newSet.erase(_epsilon);
-                        _data[symbols[i]].merge(newSet);
-                        if (oldSize != _data[symbols[i]].size())
-                            flag = true;
-                    }
-                }
-            }
-        }
-
         _infile.clear();
         _infile.seekg(0, std::ios::beg);
         while (!_infile.eof())
