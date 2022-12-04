@@ -37,7 +37,7 @@ int LL1Parser::parse(bool debug)
 
     if (debug)
     {
-        fprintf(stdout, "%-20s%-8s%-12s\n", "Stack", "Symbol", "Formula");
+        fprintf(stdout, "%-20s%-8s%-12s\n", "Stack", "Symbol", "Formula/Operation");
         auto stackString = _getStackString();
         fprintf(stdout, "%-20s%-8s%-12s\n", stackString.c_str(), _symbol.c_str(), "Init");
     }
