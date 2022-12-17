@@ -1,0 +1,4 @@
+S'->S
+S->A|B
+A->aAb|c
+B->aBb|d
