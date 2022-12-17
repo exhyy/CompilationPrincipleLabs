@@ -1,4 +1,5 @@
-S'->S
-S->A|B
-A->aAb|c
-B->aBb|d
+S->V=E
+E->E+T|E-T|T
+T->T*F|T/F|F
+F->(E)|i
+V->i

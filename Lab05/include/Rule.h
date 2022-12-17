@@ -9,6 +9,7 @@ class Rule
 public:
     std::string left = "";
     std::vector<std::string> right;
+    bool operator<(const Rule &that) const;
 };
 
 #endif

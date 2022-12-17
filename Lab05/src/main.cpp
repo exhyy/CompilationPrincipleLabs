@@ -2,15 +2,25 @@
 #include "Grammar.h"
 #include "Item.h"
 #include "ItemSets.h"
+#include "FirstSet.h"
+#include "FollowSet.h"
 
 int main(int argc, char *argv[])
 {
-    Grammar grammar(argv[1], "", "S'", "#");
+    Grammar grammar(argv[1], "\\epsilon", "S'", "#");
     std::cout << "Grammar构建完成" << std::endl;
     ItemSets itemSets(grammar);
     std::cout << "ItemSets构建完成" << std::endl;
     if (itemSets.isAugmented())
         std::cout << "文法已增广" << std::endl;
+
+    FirstSet firstSet(grammar);
+    std::cout << "FirstSet: " << std::endl;
+    firstSet.print();
+
+    FollowSet followSet(grammar, firstSet);
+    std::cout << std::endl << "FollowSet: " << std::endl;
+    followSet.print();
 
     auto itemSetsData = itemSets.data();
     for (int i = 0; i < int(itemSetsData.size()); i++)
@@ -33,20 +43,6 @@ int main(int argc, char *argv[])
         std::cout << std::endl
                   << std::endl;
     }
-    // auto startRulesOrinigal = grammar.collectByLeft("S'");
-    // std::cout << "startRulesOrinigal.size(): " << startRulesOrinigal.size() << std::endl;
-    // Item item;
-    // item.setRule(startRulesOrinigal[0]);
-    // item.setDot(0);
-    // auto firstClosure = itemSets.closure({item});
-    // for (auto item : firstClosure)
-    // {
-    //     std::cout << item.rule().left << "->";
-    //     for (auto symbol : item.rule().right)
-    //     {
-    //         std::cout << symbol;
-    //     }
-    //     std::cout << "   dot: " << item.dot() << std::endl;
-    // }
+    itemSets.printParsingTable();
     return 0;
 }
