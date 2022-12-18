@@ -71,36 +71,4 @@ bool Item::operator<(const Item &that) const
     if (that._dot == int(that._rule.right.size()))
         b += ".";
     return a < b;
-    // if (_rule.left < that._rule.left)
-    //     return true;
-    // else
-    // {
-    //     std::string a = "", b = "";
-    //     for (int i = 0; i < int(_rule.right.size()); i++)
-    //     {
-    //         if (i == _dot)
-    //             a += ".";
-    //         a += _rule.right[i];
-    //     }
-    //     if (_dot == int(_rule.right.size()))
-    //         a += ".";
-
-    //     for (int j = 0; j < int(that._rule.right.size()); j++)
-    //     {
-    //         if (j == that._dot)
-    //             b += ".";
-    //         b += that._rule.right[j];
-    //     }
-    //     if (that._dot == int(that._rule.right.size()))
-    //         b += ".";
-    //     return a < b;
-    //     // for (auto symbol : _rule.right)
-    //     //     a += symbol;
-    //     // for (auto symbol : that._rule.right)
-    //     //     b += symbol;
-    //     // if (a < b)
-    //     //     return true;
-    //     // else
-    //     //     return _dot < that._dot;
-    // }
 }

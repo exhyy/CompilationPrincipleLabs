@@ -288,6 +288,7 @@ int SLR1Parser::_doSemanticAction(int ruleId)
         _symbolTable.add(_symbolStack.top().second);
         return _symbolTable.getIndex(_symbolStack.top().second);
     }
+    throw std::string("错误：未知规则");
 }
 
 void SLR1Parser::_generateCode(std::string op, int arg1, int arg2, int target)
