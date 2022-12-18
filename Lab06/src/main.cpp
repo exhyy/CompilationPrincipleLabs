@@ -19,7 +19,8 @@ int main(int argc, char *argv[])
     }
     if (argc < 2)
     {
-        std::cerr << "错误：至少需要一个参数：输入文件" << std::endl; 
+        std::cerr << "错误：至少需要一个参数：输入文件" << std::endl;
+        return 1;
     }
     FILE *lexSrc, *lexDest;
     lexSrc = fopen(argv[1], "r");
