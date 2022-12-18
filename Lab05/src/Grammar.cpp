@@ -13,6 +13,30 @@ Grammar::Grammar(std::string filename, std::string epsilon, std::string start, s
     _getData();
 }
 
+Grammar::Grammar(std::string filename, std::string epsilon, std::string end) : _filename(filename), _epsilon(epsilon), _end(end)
+{
+    _infile.open(filename, std::ios::in);
+    if (!_infile.is_open())
+    {
+        std::string msg = "无法打开" + filename;
+        throw msg;
+    }
+    _start = "";
+    std::string line;
+    while (!_infile.eof())
+    {
+        getline(_infile, line);
+        int index = line.find("->");
+        if (index == -1)
+            continue;
+        _start = line.substr(0, index);
+        break;
+    }
+    _getNonterminal();
+    _getTerminal();
+    _getData();
+}
+
 Grammar::Grammar(const Grammar &that) : _filename(that._filename), _epsilon(that._epsilon), _start(that._start), _end(that._end)
 {
     _infile.open(_filename, std::ios::in);

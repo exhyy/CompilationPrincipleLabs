@@ -25,6 +25,7 @@ private:
 
 public:
     Grammar(std::string filename, std::string epsilon, std::string start, std::string end);
+    Grammar(std::string filename, std::string epsilon, std::string end); // 选择第一个非终结符作为开始符号
     Grammar(const Grammar &that);
     ~Grammar();
     const std::set<std::string, SymbolCmp> &nonterminal();

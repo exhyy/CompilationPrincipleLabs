@@ -38,7 +38,7 @@ int Item::type(const std::set<std::string, SymbolCmp> &nonterminal, const std::s
     if (nonterminal.find(_rule.right[_dot]) != nonterminal.end())
         return ITEM_TO_BE_REDUCED;
     if (terminal.find(_rule.right[_dot]) != terminal.end())
-        return ITEM_REDUCED;
+        return ITEM_SHIFTED;
     return ITEM_ERROR_TYPE;
 }
 

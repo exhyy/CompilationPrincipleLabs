@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "Grammar.h"
 #include "Item.h"
 #include "ItemSets.h"
@@ -7,7 +8,7 @@
 
 int main(int argc, char *argv[])
 {
-    Grammar grammar(argv[1], "\\epsilon", "S'", "#");
+    Grammar grammar(argv[1], "\\epsilon", "#");
     std::cout << "Grammar构建完成" << std::endl;
     ItemSets itemSets(grammar);
     std::cout << "ItemSets构建完成" << std::endl;

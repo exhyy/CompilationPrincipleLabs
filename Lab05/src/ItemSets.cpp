@@ -31,7 +31,7 @@ ItemSets::ItemSets(Grammar grammar) : _grammar(grammar)
     _startItem.setRule(startRule);
     _startItem.setDot(0);
 
-    std::map<std::set<Item>, bool> setToStatus; // 项目集映射到对应的状态编号
+    std::map<std::set<Item>, int> setToStatus; // 项目集映射到对应的状态编号
     const std::set<std::string, SymbolCmp> &terminal = _grammar.terminal();
     const std::set<std::string, SymbolCmp> &nonterminal = _grammar.nonterminal();
     FirstSet firstSet(_grammar);
