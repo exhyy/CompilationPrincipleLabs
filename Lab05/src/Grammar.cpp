@@ -183,3 +183,11 @@ std::vector<Rule> Grammar::collectByLeft(std::string left)
     }
     return result;
 }
+
+std::map<Rule, int> Grammar::mapRuleToNo()
+{
+    std::map<Rule, int> result;
+    for (int i = 0; i < int(_data.size()); i++)
+        result[_data[i]] = i;
+    return result;
+}

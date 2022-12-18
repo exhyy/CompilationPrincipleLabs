@@ -37,10 +37,7 @@ ItemSets::ItemSets(Grammar grammar) : _grammar(grammar)
     FirstSet firstSet(_grammar);
     FollowSet followSet(_grammar, firstSet);
     auto follow = followSet.data(); // FOLLOW集
-    std::map<Rule, int> ruleToNo;   // 规则映射到编号
-    auto grammarData = _grammar.data();
-    for (int i = 0; i < int(grammarData.size()); i++)
-        ruleToNo[grammarData[i]] = i;
+    auto ruleToNo = _grammar.mapRuleToNo(); // 规则映射到编号
 
     auto I0 = closure({_startItem}); // 初态项目集
     _data.push_back(I0);

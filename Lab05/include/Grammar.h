@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <utility>
+#include <map>
 #include "utils.h"
 #include "Rule.h"
 
@@ -35,6 +36,7 @@ public:
     std::string start();
     std::string end();
     std::vector<Rule> collectByLeft(std::string left); // 返回所有左部为left的规则
+    std::map<Rule, int> mapRuleToNo();
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "ItemSets.h"
 #include "FirstSet.h"
 #include "FollowSet.h"
+#include "SLR1Parser.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,30 +21,40 @@ int main(int argc, char *argv[])
     firstSet.print();
 
     FollowSet followSet(grammar, firstSet);
-    std::cout << std::endl << "FollowSet: " << std::endl;
+    std::cout << std::endl
+              << "FollowSet: " << std::endl;
     followSet.print();
-
-    auto itemSetsData = itemSets.data();
-    for (int i = 0; i < int(itemSetsData.size()); i++)
-    {
-        std::cout << "Item Set " << i << ": " << std::endl;
-        for (auto item : itemSetsData[i])
-        {
-            std::cout << item.rule().left << "->";
-            auto right = item.rule().right;
-            for (int j = 0; j < int(right.size()); j++)
-            {
-                if (j == item.dot())
-                    std::cout << "·";
-                std::cout << right[j];
-            }
-            if (item.dot() == int(right.size()))
-                std::cout << "·";
-            std::cout << std::endl;
-        }
-        std::cout << std::endl
-                  << std::endl;
-    }
     itemSets.printParsingTable();
+
+    SLR1Parser parser(grammar, itemSets);
+    int t = parser.parse(argv[2], true);
+    if (t == 0)
+        std::cout << "语法分析成功" << std::endl;
+    else
+        std::cout << "语法分析失败" << std::endl
+                  << "错误位置：" << t << std::endl
+                  << "错误信息：" << parser.errorMessage() << std::endl;
+
+    // auto itemSetsData = itemSets.data();
+    // for (int i = 0; i < int(itemSetsData.size()); i++)
+    // {
+    //     std::cout << "Item Set " << i << ": " << std::endl;
+    //     for (auto item : itemSetsData[i])
+    //     {
+    //         std::cout << item.rule().left << "->";
+    //         auto right = item.rule().right;
+    //         for (int j = 0; j < int(right.size()); j++)
+    //         {
+    //             if (j == item.dot())
+    //                 std::cout << "·";
+    //             std::cout << right[j];
+    //         }
+    //         if (item.dot() == int(right.size()))
+    //             std::cout << "·";
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << std::endl
+    //               << std::endl;
+    // }
     return 0;
 }
