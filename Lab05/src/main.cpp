@@ -11,23 +11,23 @@ int main(int argc, char *argv[])
 {
     Grammar grammar(argv[1], "\\epsilon", "#");
     std::cout << "Grammar构建完成" << std::endl;
-    ItemSets itemSets(grammar);
+    ItemSets itemSets(grammar, true);
     std::cout << "ItemSets构建完成" << std::endl;
     if (itemSets.isAugmented())
         std::cout << "文法已增广" << std::endl;
 
     FirstSet firstSet(grammar);
-    std::cout << "FirstSet: " << std::endl;
-    firstSet.print();
+    // std::cout << "FirstSet: " << std::endl;
+    // firstSet.print();
 
     FollowSet followSet(grammar, firstSet);
-    std::cout << std::endl
-              << "FollowSet: " << std::endl;
-    followSet.print();
+    // std::cout << std::endl
+            //   << "FollowSet: " << std::endl;
+    // followSet.print();
     itemSets.printParsingTable();
 
     SLR1Parser parser(grammar, itemSets);
-    int t = parser.parse(argv[2], true);
+    int t = parser.parse(argv[2], argv[3], true);
     if (t == 0)
         std::cout << "语法分析成功" << std::endl;
     else

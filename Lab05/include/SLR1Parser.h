@@ -3,9 +3,12 @@
 
 #include "Grammar.h"
 #include "ItemSets.h"
+#include "SymbolTable.h"
 #include <string>
 #include <stack>
 #include <fstream>
+#include <utility>
+#include <vector>
 
 #define EOI 0
 #define VOID 1
@@ -48,28 +51,35 @@
 #define DIVE 38         // /=
 #define ASSIGN 39       // =
 
+typedef std::pair<std::string, std::string> PSS;
+
 class SLR1Parser
 {
 private:
     Grammar _grammar;
     std::ifstream _infile;
+    std::ofstream _outfile;
     std::map<PIS, PII> _ACTION;
     std::map<PIS, int> _GOTO;
     std::stack<int> _statusStack;
-    std::stack<std::string> _symbolStack;
+    std::stack<PSS> _symbolStack;
     std::vector<std::string> _idToSymbol;
     int _wordId;
     std::string _wordValue;
-    std::string _symbol; // 当前输入串符号
+    std::string _inputSymbol; // 当前输入串符号
     std::string _errorMessage = "";
+    SymbolTable _symbolTable; // 符号表
     void _advance();
+    int _doSemanticAction(int ruleId);
+    void _generateCode(std::string op, int arg1, int arg2, int target); // arg1，arg2，target都是符号表的下标
+    int _newTemp();
     std::string _getStatusString(const std::stack<int> &stack);
-    std::string _getSymbolString(const std::stack<std::string> &stack);
-    void _printLine(int statusStackLength, const std::stack<int> &statusStack, int symbolStackLength, const std::stack<std::string> &symbolStack, int symbolLength, int actionLength, PII actionValue, int gotoLength, int gotoValue);
+    std::string _getSymbolString(const std::stack<PSS> &stack);
+    void _printLine(int statusStackLength, const std::stack<int> &statusStack, int symbolStackLength, const std::stack<PSS> &symbolStack, int symbolLength, int actionLength, PII actionValue, int gotoLength, int gotoValue);
 
 public:
     SLR1Parser(Grammar grammar, ItemSets itemSets);
-    int parse(std::string filename, bool debug=false);
+    int parse(std::string inputFilename, std::string outputFilename, bool debug = false);
     std::string errorMessage();
 };
 

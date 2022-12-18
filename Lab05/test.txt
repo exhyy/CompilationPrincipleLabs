@@ -1,1 +1,1 @@
-abcde=sa*x/(he123+(c))
+X=B+C*D

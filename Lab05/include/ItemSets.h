@@ -26,7 +26,7 @@ private:
     std::map<PIS, int> _GOTO;
 
 public:
-    ItemSets(Grammar grammar);
+    ItemSets(Grammar grammar, bool forcedAugmention=false);
     bool isAugmented();
     std::vector<std::set<Item>> data();
     std::map<PIS, PII> ACTION();

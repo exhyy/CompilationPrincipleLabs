@@ -9,12 +9,12 @@
 #include <iomanip>
 #include <iostream>
 
-ItemSets::ItemSets(Grammar grammar) : _grammar(grammar)
+ItemSets::ItemSets(Grammar grammar, bool forcedAugmention) : _grammar(grammar)
 {
     Rule startRule;
     std::string startSymbol = grammar.start();
     auto startRulesOrinigal = grammar.collectByLeft(startSymbol);
-    if (startRulesOrinigal.size() > 1)
+    if (startRulesOrinigal.size() > 1 || forcedAugmention)
     {
         // 拓广文法
         std::vector<std::string> right;
