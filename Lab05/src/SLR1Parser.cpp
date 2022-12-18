@@ -51,15 +51,16 @@ int SLR1Parser::parse(std::string inputFilename, std::string outputFilename, boo
     _symbolStack.push({_grammar.end(), ""});
     _advance();
     int cnt = 1;
-    int statusLength = 32, symbolLength = 32;
+    int statusLength = 32, symbolLength = 32, codeLength = 16;
     if (debug)
     {
         std::cout << std::setw(statusLength) << "Status Stack"
                   << "|" << std::setw(symbolLength) << "Symbol Stack"
                   << "|" << std::setw(8) << "Input"
                   << "|" << std::setw(8) << "ACTION"
-                  << "|" << std::setw(8) << "GOTO" << std::endl;
-        std::string line(statusLength + symbolLength + 28, '-');
+                  << "|" << std::setw(8) << "GOTO"
+                  << "|" << std::setw(codeLength) << "Code" << std::endl;
+        std::string line(statusLength + symbolLength + codeLength + 29, '-');
         std::cout << line << std::endl;
     }
 
@@ -76,7 +77,7 @@ int SLR1Parser::parse(std::string inputFilename, std::string outputFilename, boo
             if (actionValue.first == ACTION_SHIFT)
             {
                 if (debug)
-                    _printLine(statusLength, _statusStack, symbolLength, _symbolStack, 8, 8, actionValue, 8, -1);
+                    _printLine(statusLength, _statusStack, symbolLength, _symbolStack, 8, 8, actionValue, 8, -1, codeLength);
                 _statusStack.push(actionValue.second);
                 _symbolStack.push({_inputSymbol, _wordValue});
                 _advance();
@@ -103,13 +104,13 @@ int SLR1Parser::parse(std::string inputFilename, std::string outputFilename, boo
                 {
                     gotoValue = _GOTO[key];
                     if (debug)
-                        _printLine(statusLength, tempStatusStack, symbolLength, tempSymbolStack, 8, 8, actionValue, 8, gotoValue);
+                        _printLine(statusLength, tempStatusStack, symbolLength, tempSymbolStack, 8, 8, actionValue, 8, gotoValue, codeLength);
                     _statusStack.push(gotoValue);
                 }
                 else
                 {
                     if (debug)
-                        _printLine(statusLength, tempStatusStack, symbolLength, tempSymbolStack, 8, 8, actionValue, 8, -1);
+                        _printLine(statusLength, tempStatusStack, symbolLength, tempSymbolStack, 8, 8, actionValue, 8, -1, codeLength);
                     _errorMessage = "找不到GOTO目标";
                     break;
                 }
@@ -117,7 +118,7 @@ int SLR1Parser::parse(std::string inputFilename, std::string outputFilename, boo
             else if (actionValue.first == ACTION_ACCEPT)
             {
                 if (debug)
-                    _printLine(statusLength, _statusStack, symbolLength, _symbolStack, 8, 8, actionValue, 8, -1);
+                    _printLine(statusLength, _statusStack, symbolLength, _symbolStack, 8, 8, actionValue, 8, -1, codeLength);
                 cnt = 0;
                 break;
             }
@@ -132,7 +133,7 @@ int SLR1Parser::parse(std::string inputFilename, std::string outputFilename, boo
             if (debug)
             {
                 PII tempActionValue(-1, -1);
-                _printLine(statusLength, _statusStack, symbolLength, _symbolStack, 8, 8, tempActionValue, 8, -1);
+                _printLine(statusLength, _statusStack, symbolLength, _symbolStack, 8, 8, tempActionValue, 8, -1, codeLength);
             }
             _errorMessage = "找不到ACTION目标";
             break;
@@ -323,6 +324,7 @@ void SLR1Parser::_generateCode(std::string op, int arg1, int arg2, int target)
 
     result = "(" + op + ", " + name1 + ", " + name2 + ", " + nameTarget + ")";
     _outfile << result << std::endl;
+    _code = result;
 }
 
 int SLR1Parser::_newTemp()
@@ -362,12 +364,20 @@ std::string SLR1Parser::_getSymbolString(const std::stack<PSS> &stack)
     return result;
 }
 
-void SLR1Parser::_printLine(int statusStackLength, const std::stack<int> &statusStack, int symbolStackLength, const std::stack<PSS> &symbolStack, int symbolLength, int actionLength, PII actionValue, int gotoLength, int gotoValue)
+void SLR1Parser::_printLine(int statusStackLength, const std::stack<int> &statusStack, int symbolStackLength, const std::stack<PSS> &symbolStack, int symbolLength, int actionLength, PII actionValue, int gotoLength, int gotoValue, int codeLength)
 {
     auto statusString = _getStatusString(statusStack);
     auto symbolString = _getSymbolString(symbolStack);
     std::string actionString = "";
     std::string gotoString = "";
+    static std::string lastCode = ""; // 上一次打印的四元式
+    std::string codeString = "";
+    if (lastCode != _code)
+    {
+        // 产生了新的四元式
+        lastCode = _code;
+        codeString = _code;
+    }
     if (actionValue.first == ACTION_SHIFT)
         actionString = "S_" + std::to_string(actionValue.second);
     else if (actionValue.first == ACTION_REDUCE)
@@ -376,7 +386,7 @@ void SLR1Parser::_printLine(int statusStackLength, const std::stack<int> &status
         actionString = "acc";
     if (gotoValue >= 0)
         gotoString = std::to_string(gotoValue);
-    std::cout << std::setw(statusStackLength) << statusString << "|" << std::setw(symbolStackLength) << symbolString << "|" << std::setw(symbolLength) << _inputSymbol << "|" << std::setw(actionLength) << actionString << "|" << std::setw(gotoLength) << gotoString << std::endl;
+    std::cout << std::setw(statusStackLength) << statusString << "|" << std::setw(symbolStackLength) << symbolString << "|" << std::setw(symbolLength) << _inputSymbol << "|" << std::setw(actionLength) << actionString << "|" << std::setw(gotoLength) << gotoString << "|" << std::setw(codeLength) << codeString << std::endl;
 }
 
 std::string SLR1Parser::errorMessage()

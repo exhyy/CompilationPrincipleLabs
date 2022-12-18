@@ -69,13 +69,14 @@ private:
     std::string _inputSymbol; // 当前输入串符号
     std::string _errorMessage = "";
     SymbolTable _symbolTable; // 符号表
+    std::string _code = "";        // 生成的四元式
     void _advance();
     int _doSemanticAction(int ruleId);
     void _generateCode(std::string op, int arg1, int arg2, int target); // arg1，arg2，target都是符号表的下标
     int _newTemp();
     std::string _getStatusString(const std::stack<int> &stack);
     std::string _getSymbolString(const std::stack<PSS> &stack);
-    void _printLine(int statusStackLength, const std::stack<int> &statusStack, int symbolStackLength, const std::stack<PSS> &symbolStack, int symbolLength, int actionLength, PII actionValue, int gotoLength, int gotoValue);
+    void _printLine(int statusStackLength, const std::stack<int> &statusStack, int symbolStackLength, const std::stack<PSS> &symbolStack, int symbolLength, int actionLength, PII actionValue, int gotoLength, int gotoValue, int codeLength);
 
 public:
     SLR1Parser(Grammar grammar, ItemSets itemSets);
